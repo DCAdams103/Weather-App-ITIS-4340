@@ -147,7 +147,11 @@
 
 .extras-container {
   min-width: 100%;
-  min-height: 30%;
+  min-height: 35%;
+}
+
+.spacer {
+  margin-bottom: 3vh;
 }
 
 @keyframes inflate-1 {
@@ -173,7 +177,7 @@
   display: inline-block;
   margin-top: 3%;
   width: 95%;
-  min-height: 30vh;
+  min-height: 33vh;
   background-color: #A9D0F6;
   border-radius: 20px;
   animation: inflate-1 1s ease;
@@ -198,8 +202,30 @@
   width: 100%;
 }
 
+.extra-content-container-col-2-row-1 {
+  display: flex;
+  align-items: center;
+  padding-left: 10%;
+  text-align: left;
+  float: left; 
+  width: 100%;
+}
+
+.extra-content-container-col-2-row-2 {
+  display: flex;
+  align-items: center;
+  padding-left: 7%;
+  text-align: left;
+  float: left; 
+  width: 100%;
+}
+
 .temperature-icon {
   max-width: 50px;
+}
+
+.wind-icon {
+  max-width: 60px;
 }
 
 .sunrise-sunset-icon {
@@ -208,9 +234,83 @@
   padding-right: 1%;
 }
 
-.view-more-button { 
+.wind-speed-container {
+  margin-left: 12%;
+  margin-bottom: 2%;
+}
+
+.wind-gusts-container {
+  margin-left: 5%;
+  margin-bottom: 2%;
+}
+
+.wind-speed-text {
+  margin: 0;
+  display: inline-block;
+  font-family: "Montserrat", sans-serif;
+  text-align: center;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-size: 3em;
+}
+
+.wind-speed-subtitle {
+  margin: 0;
+  display: inline-block;
+  font-family: "Montserrat", sans-serif;
+  text-align: center;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-size: 1em;
+}
+
+.view-more-text {
+  display: inline-block;
+  font-family: "Montserrat", sans-serif;
+  margin-left: 15%;
+  text-align: center;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-size: 1em;
+}
+
+.view-more-container {
+  margin-left: auto;
+  margin-right: 5%;
+  display: flex;
+  align-items: center;
+}
+
+
+.view-more-icon { 
   max-width: 40px;
-  float: right;
+}
+
+@keyframes rotate-f {
+  from {transform: rotate(0deg); }
+  to {transform: rotate(-180deg); }
+}
+
+.view-more-icon-rotate-f {
+  max-width: 40px;
+  padding-left: .8em;
+  padding-right: 1%;
+  transform: rotate(-180deg);
+  animation: rotate-f 1s ease;
+}
+
+@keyframes rotate-b {
+  from {transform: rotate(-180deg); }
+  to {transform: rotate(0deg); }
+}
+
+.view-more-icon-rotate-b {
+  max-width: 40px;
+  transform: rotate(-180deg);
+  animation: rotate-b 1.1s ease;
 }
 
 .extra-content-title {
@@ -220,6 +320,16 @@
   font-weight: 300;
   font-style: normal;
   font-size: 1em;
+  margin-top: 0;
+}
+
+.extra-content-title-wind {
+  margin-bottom: 0;
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-size: 1.5em;
   margin-top: 0;
 }
 

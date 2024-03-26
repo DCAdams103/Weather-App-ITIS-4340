@@ -6,6 +6,7 @@ function App() {
 
   const [inflate, setInflate] = useState(false);
   const [deflate, setDeflate] = useState(false);
+  const [text, setText] = useState('View More');
 
   function timeout(delay) {
       return new Promise( res => setTimeout(res, delay) );
@@ -15,9 +16,11 @@ function App() {
     
     if(!inflate) {
       setInflate(true);
+      setText('View Less');
       setDeflate(false);
     } else {
       setDeflate(true);
+      setText('View More')
       await timeout(1000);
       setInflate(false);
     }
@@ -79,6 +82,7 @@ function App() {
 
                   <div className="extra-content-grid-container">
 
+                    <div className="spacer"></div>
                     {/* ------------ Feels Like information ------------ */}
                     <div className="extra-content-container">
                       <img src='temperature-icon.png' className="temperature-icon" alt="temperature-icon" />
@@ -86,6 +90,18 @@ function App() {
                         <h3 className="extra-content-title">Feels Like</h3>
                         <h1 className="extra-content-subtitle">50°</h1>
                       </div>
+
+                      {(inflate && !deflate) && (
+                        <div className="extra-content-container-col-2-row-1">
+                          <img src='wind-icon.png' className="wind-icon" alt="wind-icon" />
+
+                          <div>
+                            <h3 className="extra-content-title-wind">Wind</h3>
+                          </div>
+                        </div>
+                        
+                      )}
+                      
                     </div>
 
                     {/* ------------ Sunrise Information ------------ */}
@@ -96,8 +112,26 @@ function App() {
                         <h3 className="extra-content-title">Sunrise</h3>
                         <h1 className="extra-content-subtitle">7:03am</h1>
                       </div>
+
+                      {(inflate && !deflate) && (
+                        <div className="extra-content-container-col-2-row-2">
+                          <h1 className='wind-speed-text'>7</h1>
+
+                          <div className="wind-speed-container">
+                            <h3 className="wind-speed-subtitle">mph</h3>
+                            <br/>
+                            <h3 className="wind-speed-subtitle">Wind</h3>
+                          </div>
+                        </div>
+                        
+                      )}
+
+                      <div className="view-more-container">
+                        <h3 className="view-more-text">{text}</h3>
+                        
+                        <img src='arrow-icon.png' className={inflate ? deflate ? "view-more-icon-rotate-b" : "view-more-icon-rotate-f" : "view-more-icon"} onClick={showViewMore} alt='arrow-icon'></img>
+                      </div>
                       
-                      <img src='arrow-icon.png' className="view-more-button" onClick={showViewMore} alt='arrow-icon'></img>
                     </div>
 
                     {/* ------------ Sunrise Information ------------ */}
@@ -107,6 +141,20 @@ function App() {
                         <h3 className="extra-content-title">Sunset</h3>
                         <h1 className="extra-content-subtitle">7:33pm</h1>
                       </div>
+
+                      {(inflate && !deflate) &&(
+                        <div className="extra-content-container-col-2-row-2">
+                          <h1 className='wind-speed-text'>14</h1>
+
+                          <div className="wind-gusts-container">
+                            <h3 className="wind-speed-subtitle">mph</h3>
+                            <br/>
+                            <h3 className="wind-speed-subtitle">Gusts</h3>
+                          </div>
+                        </div>
+                        
+                      )}
+
                     </div>
 
                   </div>

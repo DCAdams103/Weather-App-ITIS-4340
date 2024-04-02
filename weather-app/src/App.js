@@ -134,7 +134,7 @@ function App() {
 
       const options = {method: 'GET', headers: {accept: 'application/json'}};
       console.log('test');
-      // fetch(`https://api.tomorrow.io/v4/weather/forecast?location=${lat},${long}&timesteps=daily&units=imperial&apikey=QGmrpuDxJUDhwlAxMz8aYFGAINKVeIuy`, options)
+      // fetch(`https://api.tomorrow.io/v4/weather/forecast?location=${lat},${long}&timesteps=daily&units=imperial&apikey={API_KEY}`, options)
       //   .then(response => response.json())
       //   .then(json => {
       //     console.log(json);

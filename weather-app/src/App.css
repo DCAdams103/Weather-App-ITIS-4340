@@ -41,8 +41,12 @@ img {
 }
 
 .title {
-  margin: 0;
-  margin-left: 20px;
+  margin-left: 3%;
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-size: 2em;
 }
 
 /* ----------------------- Grid Layout -----------------------*/
@@ -336,7 +340,8 @@ img {
 .view-more-text {
   display: inline-block;
   font-family: "Montserrat", sans-serif;
-  margin-left: 15%;
+  margin-left: 25%;
+  margin-right: 10%;
   text-align: center;
   font-optical-sizing: auto;
   font-weight: 300;
@@ -354,6 +359,25 @@ img {
 
 .view-more-icon { 
   max-width: 40px;
+}
+
+.view-map-container {
+  margin-left: auto;
+  margin-top: 5%;
+  display: flex;
+  align-items: center;
+}
+
+.view-map-text {
+  display: inline-block;
+  font-family: "Montserrat", sans-serif;
+  margin-left: 5%;
+  margin-right: 10%;
+  text-align: center;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-size: 1em;
 }
 
 @keyframes rotate-f {
@@ -408,6 +432,7 @@ img {
   font-weight: 300;
   font-style: normal;
   font-size: 1.5em;
+  white-space: nowrap;
   margin-bottom: 0;
 }
 
@@ -418,9 +443,41 @@ img {
   margin-left: 3%;
   margin-top: 3%;
   width: 50%;
-  min-height: 30vh;
+  height: 30vh;
   background-color: #A9D0F6;
   border-radius: 20px;
+}
+
+.extra-2-content {
+  display: flex;
+  align-items: center;
+  opacity: 1;
+  padding-left: 7%;
+  text-align: left;
+  float: left; 
+  width: 100%;
+}
+
+.extra-2-content-fade-out {
+  display: flex;
+  align-items: center;
+  opacity: 1;
+  padding-left: 7%;
+  text-align: left;
+  float: left; 
+  width: 100%;
+  animation: text-fade-out 1s ease;
+}
+
+.extra-2-content-fade-in {
+  display: flex;
+  align-items: center;
+  opacity: 1;
+  padding-left: 7%;
+  text-align: left;
+  float: left; 
+  width: 100%;
+  animation: text-fade-in 1s ease;
 }
 
 @keyframes inflate-2 {
@@ -456,6 +513,13 @@ img {
 }
 
 /* ----------------------- Right Column: 7-Day forecast -----------------------*/
+.seven-day-title-container {
+  margin-top: 3%;
+  margin: 0 auto;
+  max-width: 98%;
+  height: 10vh;
+}
+
 .seven-day-title-container h3 {
   display: inline-block;
   font-family: "Montserrat", sans-serif;
@@ -473,4 +537,26 @@ img {
 .seven-day-hi-lo {
   float: right;
   margin-right: 5%;
+}
+
+.forecast-row {
+  display: flex;
+  align-items: center;
+  opacity: 1;
+  padding-left: 7%;
+  text-align: left;
+  float: left; 
+  width: 100%;
+}
+
+.forecast-text {
+  margin-top: 0;
+  font-family: "Montserrat", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 300;
+  font-style: normal;
+  font-size: 1.25em;
+  white-space: nowrap;
+  margin-bottom: 0;
+  width: 50px;
 }

@@ -1,9 +1,14 @@
 import React from 'react';
-import SearchResult from './SearchResult'; // Import the SearchResult component
+import SearchResult from './SearchResult'; 
 
 import './SearchResultsList.css';
 
 export const SearchResultsList = ({ results }) => {
+   
+    if (!Array.isArray(results)) {
+        return null; // 
+    }
+    
     return (
         <div className="results-list">
             {results.map((result, id) => {
@@ -12,4 +17,3 @@ export const SearchResultsList = ({ results }) => {
         </div>
     );
 };
-

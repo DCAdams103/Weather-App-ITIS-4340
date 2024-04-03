@@ -13,10 +13,8 @@ export const SearchBar = ({ setResults }) => {
     })
       .then((response) => response.json())
       .then((json) => {
-        const results = json.filter((name) => {
-          return name.toLowerCase().includes(value.toLowerCase());
-        });
-        setResults(results);
+        
+        setResults(json);
       })
       .catch((error) => {
         console.error('Error fetching data:', error);

@@ -4,7 +4,7 @@
     border-radius: 35px;
     height: 2.5rem;
     padding: 0 15px;
-    box-shadow: 0px 0px 8px #ddd; /* corrected typo here */
+    box-shadow: 0px 0px 8px #ddd; 
     display: flex;
     align-items: center;
 }
@@ -24,7 +24,7 @@ input:focus {
 
 #search-icon {
     color: #656565;
-    font-size: 1.5rem;
+    font-size: 1.7rem;
     margin-right: 5px;
     margin-top: 5px;
 }

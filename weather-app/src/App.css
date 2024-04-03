@@ -49,6 +49,18 @@ img {
   font-size: 2em;
 }
 
+.search-bar-container{
+  padding-top: 5vh;
+  width: 30%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width:200px;
+}
+
+
+
 /* ----------------------- Grid Layout -----------------------*/
 
 .grid-container {

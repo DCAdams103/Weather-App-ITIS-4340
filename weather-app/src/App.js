@@ -4,6 +4,8 @@ import {useState, useRef, useEffect} from 'react';
 import {motion, useTransform, useScroll} from 'framer-motion';
 import {MdChevronRight, MdChevronLeft} from 'react-icons/md';
 import Switch from 'react-switch';
+import { SearchBar } from './components/SearchBar';
+import { SearchResultsList } from './components/SearchResultsList';
 
 function App() {
 
@@ -19,6 +21,7 @@ function App() {
   const [fiveDay, setFiveDay] = useState([{day: "Monday", hi: -99, lo: -99, weatherCode: 1001},{day: "Monday", hi: -99, lo: -99, weatherCode: 1001},{day: "Monday", hi: -99, lo: -99, weatherCode: 1001}, {day: "Monday", hi: -99, lo: -99, weatherCode: 1001},{day: "Monday", hi: -99, lo: -99, weatherCode: 1001},{day: "Monday", hi: -99, lo: -99, weatherCode: 1001}]);
   const [checked, setChecked] = useState(false);
   const [unit, setUnit] = useState('imperial');
+  const [results, setResults] = useState([]);
 
   function timeout(delay) {
       return new Promise( res => setTimeout(res, delay) );
@@ -221,6 +224,11 @@ function App() {
               <div className="logo-container">
                 <img src='skywatch-logo.png' className="logo" alt="logo" />
                 <h1 className='title'>SkyWatch</h1>
+              </div>
+             
+              <div className="search-bar-container">
+              <SearchBar setResults={setResults}/>
+              <SearchResultsList results={results}/>
               </div>
 
               <Switch onChange={handleChange} onColor='#8EB1D3' offColor='#D9D9D9' checkedIcon={<h3 className="pl-[28%]">C°</h3>} uncheckedIcon={<h3 className="pl-[28%]">F°</h3>}  checked={checked} />

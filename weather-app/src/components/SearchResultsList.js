@@ -3,7 +3,7 @@ import SearchResult from './SearchResult';
 
 import './SearchResultsList.css';
 
-export const SearchResultsList = ({ results }) => {
+export const SearchResultsList = ({ results, lat, long, location, recent, setRecent }) => {
    
     if (!Array.isArray(results)) {
         return null; // 
@@ -12,7 +12,7 @@ export const SearchResultsList = ({ results }) => {
     return (
         <div className="results-list">
             {results.map((result, id) => {
-                return <SearchResult result={result} key={id} />;
+                return <SearchResult result={result} key={id} setLat={lat} setLong={long} setLocation={location} recent={recent} setRecent={setRecent} />;
             })}
         </div>
     );

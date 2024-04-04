@@ -6,6 +6,13 @@ import {MdChevronRight, MdChevronLeft} from 'react-icons/md';
 import Switch from 'react-switch';
 import { SearchBar } from './components/SearchBar';
 import { SearchResultsList } from './components/SearchResultsList';
+import L from 'leaflet'
+import './leaflet-openweathermap'
+import './leaflet-openweathermap.css'
+import 'leaflet/dist/leaflet.css'
+import markerIconPng from 'leaflet/dist/images/marker-icon.png'
+import {Icon} from 'leaflet'
+import ReportMap from './WindyMap'
 
 function App() {
 
@@ -16,12 +23,19 @@ function App() {
   const [selected, setSelected] = useState([]);
   const [lat, setLat] = useState(0);
   const [long, setLong] = useState(0);
-  const[currentWeather, setCurrentWeather] = useState({city: '', conditions: '', temp: -99, feelsLike: -99, sunrise: '', sunset: '', gusts: -99, wind: -99});
+  const [currentWeather, setCurrentWeather] = useState({city: '', conditions: '', temp: -99, feelsLike: -99, sunrise: '', sunset: '', gusts: -99, wind: -99});
   const [cards, setCards] = useState([{url: "sunset-icon.png", title: "Title 1", temp: -99}]);
-  const [fiveDay, setFiveDay] = useState([{day: "Monday", hi: -99, lo: -99, weatherCode: 1001},{day: "Monday", hi: -99, lo: -99, weatherCode: 1001},{day: "Monday", hi: -99, lo: -99, weatherCode: 1001}, {day: "Monday", hi: -99, lo: -99, weatherCode: 1001},{day: "Monday", hi: -99, lo: -99, weatherCode: 1001},{day: "Monday", hi: -99, lo: -99, weatherCode: 1001}]);
+  const [fiveDay, setFiveDay] = useState([]);
   const [checked, setChecked] = useState(false);
   const [unit, setUnit] = useState('imperial');
   const [results, setResults] = useState([]);
+
+  const [showRadar, setShowRadar] = useState(false);
+  const [showWindy, setShowWindy] = useState(false);
+
+  const [selectedLocation, setSelectedLocation] = useState("Current Location");
+
+  const [recent, setRecent] = useState([])
 
   function timeout(delay) {
       return new Promise( res => setTimeout(res, delay) );
@@ -46,9 +60,6 @@ function App() {
 
   }
 
-  function showViewMap() {
-  }
-
   const slideLeft = () => {
     var slider = document.getElementById('slider');
     slider.scrollLeft = slider.scrollLeft - 200;
@@ -67,33 +78,26 @@ function App() {
     }
   };
 
-  const createHours = () => {
-
-    var hours = [];
-    var currDate = new Date();
-    var currHour = new Date().toLocaleString('en-US', {hour: 'numeric', hourCycle: 'h12'});
-    hours.push(currHour);
-
-    for(var i = parseInt(currHour); i < parseInt(currHour) + 12; i++) {
-      currDate.setTime(currDate.getTime() + 60*60*1000);
-      hours.push(currDate.toLocaleString('en-US', {hour: 'numeric', hourCycle: 'h12'}));
-    }
-
-    return hours;
-  };
-
   const [hours, setHours] = useState([]);
 
-  async function getLocation() {
+  useEffect(() => {
 
-    navigator.geolocation.getCurrentPosition((position) => {
-      setLat(position.coords.latitude);
-      setLong(position.coords.longitude);
-    });
+    async function getLocation() {
+      console.log(selectedLocation);
+      if(selectedLocation == "Current Location") {
+        navigator.geolocation.getCurrentPosition((position) => {
+          setLat(position.coords.latitude);
+          setLong(position.coords.longitude);
+          setRecent([...recent, {name: "Current Location", lat: position.coords.latitude, long: position.coords.longitude}])
+        });
+  
+      }
+  
+    }
+  
+    getLocation();
 
-  };
-
-  getLocation();
+  }, []);
 
 
   {/* -------------------- Grab current weather data -------------------- */}
@@ -102,18 +106,36 @@ function App() {
       let hoursArr = [];
       let tempCards = [];
 
-      fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&units=${unit}&appid=e7d090a36c9c0d105b9c70f0906f9592`)
+      fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&units=${unit}&appid={API_KEY}`)
       .then(response => response.json())
       .then(json => {
-        let sunrise = new Date(json.sys.sunrise * 1000).toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hourCycle: 'h12'});
-        let sunset = new Date(json.sys.sunset * 1000).toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hourCycle: 'h12'});
+        let sunrise = 'N/A'
+        if('sunrise' in json.sys) {
+          sunrise = new Date(json.sys.sunrise * 1000).toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hourCycle: 'h12'});
+        }
+
+        let sunset = "N/A"
+        if('sunset' in json.sys) {
+          sunset = new Date(json.sys.sunset * 1000).toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hourCycle: 'h12'});
+        }
+        
+        let gusts="N/A"
+        if('gust' in json.wind) {
+          gusts = json.wind.gust.toFixed(0);
+        }
+
+        let wind = "N/A" 
+        if('speed' in json.wind) {
+          wind = json.wind.speed.toFixed(0);
+        }
+
         setCurrentWeather({city: json.name, conditions: json.weather[0].main, 
                           temp: json.main.temp.toFixed(0), feelsLike: json.main.feels_like.toFixed(0),
-                          sunrise: sunrise, sunset: sunset, gusts: json.wind.gust.toFixed(0), wind: json.wind.speed.toFixed(0)}); 
+                          sunrise: sunrise, sunset: sunset, gusts: gusts, wind: wind}); 
       })
       .catch(error => console.error('Error:', error));
 
-      fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${long}&units=${unit}&appid=e7d090a36c9c0d105b9c70f0906f9592`)
+      fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${long}&units=${unit}&appid={API_KEY}`)
       .then(response => response.json())
       .then(json => { 
         json.list.forEach(element => {
@@ -137,22 +159,22 @@ function App() {
 
       const options = {method: 'GET', headers: {accept: 'application/json'}};
       console.log('test');
-      // fetch(`https://api.tomorrow.io/v4/weather/forecast?location=${lat},${long}&timesteps=daily&units=imperial&apikey={API_KEY}`, options)
-      //   .then(response => response.json())
-      //   .then(json => {
-      //     console.log(json);
-      //     let tempFiveDay = [];
+      fetch(`https://api.tomorrow.io/v4/weather/forecast?location=${lat},${long}&timesteps=daily&units=${unit}&apikey={API_KEY}`, options)
+        .then(response => response.json())
+        .then(json => {
+          console.log(json);
+          let tempFiveDay = [];
 
-      //     json.timelines.daily.forEach(element => {
-      //       let d = new Date(element.time);
-      //       tempFiveDay.push({day: d.toLocaleString('en-US', {weekday: 'short'}), hi: element.values.temperatureMax.toFixed(0), lo: element.values.temperatureMin.toFixed(0), weatherCode: element.values.weatherCodeMax});
-      //     });
+          json.timelines.daily.forEach(element => {
+            let d = new Date(element.time);
+            tempFiveDay.push({day: d.toLocaleString('en-US', {weekday: 'short'}), hi: element.values.temperatureMax.toFixed(0), lo: element.values.temperatureMin.toFixed(0), weatherCode: element.values.weatherCodeMax});
+          });
 
-      //     console.log(tempFiveDay);
-      //     setFiveDay(tempFiveDay);
+          console.log(tempFiveDay);
+          setFiveDay(tempFiveDay);
 
-      //   })
-      //   .catch(err => console.error(err));
+        })
+        .catch(err => console.error(err));
 
     }
   }, [lat, long, unit]);
@@ -194,6 +216,45 @@ function App() {
 
   }
 
+  {/* ----------------------------- RADAR Functios ----------------------------- */}
+
+  function RadarWindow() {
+    return (
+      <div style={{backgroundColor: '#A9D0F6'}} className="w-[95vw] h-[95vh] z-50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <div className="">
+          <h3 className="inline float-left pt-[1%] pl-[2%] text-3xl" onClick={() => setShowRadar(false)}>{"<-"} Back</h3>
+          <h1 className="inline text-center text-5xl pr-[10%]">Radar</h1>
+          <div className="flex justify-center h-[80vh] ml-[10%] mt-[10px] w-[80vw]" id='map'>
+            <></>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function mapData() {
+    var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18, attribution: '[insert correct attribution here!]' });
+
+    var clouds = L.OWM.clouds({showLegend: false, opacity: 1, appId: 'ac6430ad27a7fb708d37dd474543b091'});
+    var precipitation = L.OWM.precipitation({showLegend: false, opacity: 0.75, appId: 'ac6430ad27a7fb708d37dd474543b091'});
+    var temperature = L.OWM.temperature({showLegend: false, opacity: 0.75, appId: 'ac6430ad27a7fb708d37dd474543b091'});
+
+    var map = L.map('map', { center: new L.LatLng(lat, long), zoom: 12, layers: [osm], scrollWheelZoom: false });
+    var baseMaps = { "OSM Standard": osm };
+    var overlayMaps = { "Clouds": clouds, "Precipitation": precipitation, "Temperature": temperature };
+    var marker = L.marker([lat, long], {icon: new Icon({iconUrl: markerIconPng, iconSize: [25, 41], iconAnchor: [12, 41]})}).addTo(map);
+    var layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+    map.addLayer(clouds);
+    map.addLayer(precipitation);
+  }
+
+  async function showRadarHandler() {
+    setShowRadar(!showRadar);
+    await timeout(500);
+    mapData();
+  }
+
   function handleChange() {
     setChecked(!checked);
 
@@ -205,6 +266,26 @@ function App() {
 
   }
 
+  {/* ----------------------------- Windy Map Functios ----------------------------- */}
+  
+  async function showWindyMapHandler() {
+    setShowWindy(!showWindy); 
+  }
+
+  function WindyMap() {
+    return (
+      <div style={{backgroundColor: '#A9D0F6'}} className="w-[95vw] h-[95vh] z-50 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <div className="">
+          <h3 className="inline float-left pt-[1%] pl-[2%] text-3xl" onClick={() => setShowWindy(false)}>{"<-"} Back</h3>
+          <h1 className="inline text-center text-5xl pr-[10%]">Windy</h1>
+          <ReportMap lat={lat} long={long} />
+        </div>
+        
+      </div>
+    )
+  }
+
+
   return (
     <>
       {/* ------------ Import font ------------ */}
@@ -212,10 +293,12 @@ function App() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet" />
+
       </head>
 
       <div className="App">
-
+        {showRadar && <RadarWindow />}
+        {lat != 0 && long != 0 && showWindy && <WindyMap />}
         <div className="grid-container">
 
             {/* ------------ Left Column ------------ */}
@@ -225,13 +308,27 @@ function App() {
                 <img src='skywatch-logo.png' className="logo" alt="logo" />
                 <h1 className='title'>SkyWatch</h1>
               </div>
-             
-              <div className="search-bar-container">
-              <SearchBar setResults={setResults}/>
-              <SearchResultsList results={results}/>
-              </div>
 
               <Switch onChange={handleChange} onColor='#8EB1D3' offColor='#D9D9D9' checkedIcon={<h3 className="pl-[28%]">C°</h3>} uncheckedIcon={<h3 className="pl-[28%]">F°</h3>}  checked={checked} />
+             
+              <div className="search-bar-container">
+                <SearchBar setResults={setResults}/>
+                <SearchResultsList results={results} lat={setLat} long={setLong} location={setSelectedLocation} recent={recent} setRecent={setRecent} />
+              </div>
+
+              <div className='my-[5%]'>
+                <h3 className="title">Recent Locations:</h3>
+                <ul>
+                  {recent.map((location, index) => (
+                    <li key={index} onClick={()=>{
+                      setLat(location.lat);
+                      setLong(location.long);
+                      setSelectedLocation(location.name);
+                    
+                    }}>- {location.name}</li>
+                  ))}
+                </ul>
+              </div>
 
             </div>
             
@@ -243,7 +340,7 @@ function App() {
                 <div className="float-left w-[100%]">
                   <div className="float-left">
                     {!currentWeather.city ? <h1 className="location-title float-left">Loading...</h1> : <h1 className="location-title float-left">{currentWeather.city}</h1> }
-                    {!currentWeather.conditions ? <h3 className="conditions">Loading...</h3> : <h3 className="percipitation">{currentWeather.conditions}</h3> }
+                    {!currentWeather.conditions ? <h3 className="precipitation">Loading...</h3> : <h3 className="percipitation">{currentWeather.conditions}</h3> }
                     {currentWeather.temp == -99 ? <h1 className="temperature">Loading...</h1> : <h1 className="temperature">{currentWeather.temp}°</h1>}
                   </div>
                   
@@ -260,11 +357,14 @@ function App() {
                   <h3 className="hourly-forecast-title">Hourly Forecast</h3>
 
                   {/* ------------ View Radar ------------ */}
-                  <div className="view-radar-container">
+                  <div className="view-radar-container" onClick={() => {
+                      showRadarHandler();
+
+                      }}>
                     <h3 className="view-radar-title">View Radar</h3>
                     <img src='radar-icon.png' className="radar-icon" alt="radar-icon" />
                   </div>
-                  
+
                 </div>
 
                 <div className="relative flex items-center">
@@ -378,7 +478,9 @@ function App() {
                 {/* ------------ Right extra box ------------ */}
                 <div className={inflate ? deflate ? "extra-2-inflate" : "extra-2-deflate" : "extra-2"}>
                     
-                    <div className="extra-content-container">
+                    {!fade && (
+                     <>
+                        <div className="extra-content-container">
                           <div className={inflate ? deflate ? "extra-2-content-fade-in" : "extra-2-content-fade-out" : "extra-2-content"}>
                             <img src='wind-icon.png' className="wind-icon" alt="wind-icon" />
 
@@ -386,43 +488,45 @@ function App() {
                               <h3 className="extra-content-title-wind">Wind</h3>
                             </div>
                           </div>
-                        
-                    </div>
-
-                    <div className="extra-content-container">
-                      
-                        <div className={inflate ? deflate ? "extra-2-content-fade-in" : "extra-2-content-fade-out" : "extra-2-content"}>
-                          {currentWeather.gusts == -99 ? <h1 className='wind-speed-text'>Loading...</h1> : <h1 className='wind-speed-text'>{currentWeather.gusts}</h1> }
-
-                          <div className="wind-gusts-container">
-                            {unit == 'imperial' ? <h3 className="wind-speed-subtitle">mph</h3> : <h3 className="wind-speed-subtitle">km/h</h3>}
-                            <br/>
-                            <h3 className="wind-speed-subtitle">Gusts</h3>
-                          </div>
-                        </div>
-                        
-
-                      <div className="view-map-container">
-                        <h3 className="view-map-text">View Map</h3>
-                        
-                        <img src='arrow-icon.png' className={inflate ? deflate ? "view-more-icon-rotate-b" : "view-more-icon-rotate-f" : "view-more-icon"} onClick={showViewMap} alt='arrow-icon'></img>
-                      </div>
-
-                    </div>
-
-                    <div className="extra-content-container">
-
-                      <div className={inflate ? deflate ? "extra-2-content-fade-in" : "extra-2-content-fade-out" : "extra-2-content"}>
-                          {currentWeather.wind == -99 ? <h1 className='wind-speed-text'>Loading...</h1> : <h1 className='wind-speed-text'>{currentWeather.wind}</h1> }
-
-                          <div className="wind-speed-container">
-                            {unit == 'imperial' ? <h3 className="wind-speed-subtitle">mph</h3> : <h3 className="wind-speed-subtitle">km/h</h3>}
-                            <br/>
-                            <h3 className="wind-speed-subtitle">Wind</h3>
-                          </div>
                         </div>
 
-                    </div>
+                        <div className="extra-content-container">
+                          
+                          <div className={inflate ? deflate ? "extra-2-content-fade-in" : "extra-2-content-fade-out" : "extra-2-content"}>
+                            {currentWeather.gusts == -99 ? <h1 className='wind-speed-text'>Loading...</h1> : <h1 className='wind-speed-text'>{currentWeather.gusts}</h1> }
+
+                            <div className="wind-gusts-container">
+                              {unit == 'imperial' ? <h3 className="wind-speed-subtitle">mph</h3> : <h3 className="wind-speed-subtitle">km/h</h3>}
+                              <br/>
+                              <h3 className="wind-speed-subtitle">Gusts</h3>
+                            </div>
+                          </div>
+                            
+
+                          <div className="view-map-container" onClick={() => showWindyMapHandler()}>
+                            <h3 className="view-map-text">View Map</h3>
+                            
+                            <img src='arrow-icon.png' className={inflate ? deflate ? "view-more-icon-rotate-b" : "view-more-icon-rotate-f" : "view-more-icon"} alt='arrow-icon'></img>
+                          </div>
+
+                        </div>
+
+                        <div className="extra-content-container">
+
+                          <div className={inflate ? deflate ? "extra-2-content-fade-in" : "extra-2-content-fade-out" : "extra-2-content"}>
+                              {currentWeather.wind == -99 ? <h1 className='wind-speed-text'>Loading...</h1> : <h1 className='wind-speed-text'>{currentWeather.wind}</h1> }
+
+                            <div className="wind-speed-container">
+                              {unit == 'imperial' ? <h3 className="wind-speed-subtitle">mph</h3> : <h3 className="wind-speed-subtitle">km/h</h3>}
+                                <br/>
+                                <h3 className="wind-speed-subtitle">Wind</h3>
+                              </div>
+                            </div>
+
+                        </div>
+                     </> 
+                    )}
+                    
                 
                 </div>
                 
@@ -446,7 +550,7 @@ function App() {
                     <ForecastPicture weatherCode={day.weatherCode} />
                     {/* <img src='cloudy-icon.png' className="w-[100px] pl-[5%] pr-[3%]" alt='cloudy-icon' /> */}
                     <ForecastText weatherCode={day.weatherCode} />
-                    <h3 className="forecast-text pl-[20%]">{day.hi}° / {day.lo}°</h3>
+                    <h3 className="forecast-text pl-[15%]">{day.hi}° / {day.lo}°</h3>
                     <br className="clear-both" />
                   </div>
                 ))}

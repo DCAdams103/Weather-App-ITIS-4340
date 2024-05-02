@@ -15,25 +15,6 @@ const ReportMap = ({lat, long}) => {
     const position = [lat, long];
     const { BaseLayer, Overlay } = LayersControl;
 
-    useEffect(() => {
-        // let interval = setInterval(() => {
-        //     setState(s => ({
-        //         ...s,
-        //         pickerLat: state.pickerLat + 1,
-        //         pickerLng: state.pickerLng + 1
-        //     }));
-        // }, 1000);
-
-        // setTimeout(() => {
-        //     clearInterval(interval);
-        //     setState(s => ({...s, pickerOpen: false}));
-        // }, 6000);
-
-        // setTimeout(() => {
-        //     setState(s => ({...s, pickerOpen: true, pickerLat: 25, pickerLng: 40}));
-        // }, 7000);
-    }, [])
-
     return (
         <div>
 

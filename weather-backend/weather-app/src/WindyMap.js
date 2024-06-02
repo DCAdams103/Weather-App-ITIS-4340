@@ -40,7 +40,7 @@ const ReportMap = ({lat, long}) => {
             <Map
                 className="leaflet-container"
                 style={{width: "80%", height: "80vh", marginLeft: "12%", marginTop: "2%" }}
-                windyKey={"{API_KEY}"}
+                windyKey={"kJAxUB7Zz06BfvmA4GKdld2BpFp4D4ds"}
                 windyLabels={true}
                 windyControls={false}
                 overlay={state.overlay}

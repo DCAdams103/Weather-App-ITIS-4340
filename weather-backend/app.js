@@ -13,18 +13,7 @@ var dailyRouter = require('./routes/daily');
 
 var app = express();
 
-var whitelist = ['http://localhost:3000', 'https://weather-app-itis-4340-backend-git-backend-dcadams103s-projects.vercel.app/', 'https://weather-app-itis-4340-git-backend-dcadams103s-projects.vercel.app']
-var corsOptions = {
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  }
-}
-
-app.use(cors(corsOptions)); // define this middeware before the all routes as you defined.
+app.use(cors()); // define this middeware before the all routes as you defined.
 
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));

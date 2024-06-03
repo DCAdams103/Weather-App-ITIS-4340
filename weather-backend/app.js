@@ -27,6 +27,7 @@ app.use('/users', usersRouter);
 app.use('/weather', weatherRouter);
 app.use('/forecast', forecastRouter);
 app.use('/daily', dailyRouter);
+app.use('/test', function(req, res, next) { res.send(process.env.OPEN_WEATHER_API_KEY + "\n" + process.env.TOMORROW_API_KEY); next(); });
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

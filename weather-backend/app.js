@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var cors = require('cors')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -12,26 +13,18 @@ var dailyRouter = require('./routes/daily');
 
 var app = express();
 
-// Add headers before the routes are defined
-// From: https://stackoverflow.com/questions/18310394/no-access-control-allow-origin-node-apache-port-issue
-app.use(function (req, res, next) {
+var whitelist = ['http://localhost:3000', 'https://weather-app-itis-4340-backend-git-backend-dcadams103s-projects.vercel.app/']
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
 
-  // Website you wish to allow to connect
-  res.setHeader('Access-Control-Allow-Origin', 'https://weather-app-itis-4340-backend-git-backend-dcadams103s-projects.vercel.app/');
-
-  // Request methods you wish to allow
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-
-  // Request headers you wish to allow
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-
-  // Set to true if you need the website to include cookies in the requests sent
-  // to the API (e.g. in case you use sessions)
-  res.setHeader('Access-Control-Allow-Credentials', true);
-
-  // Pass to next layer of middleware
-  next();
-});
+app.use(cors(corsOptions)); // define this middeware before the all routes as you defined.
 
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));

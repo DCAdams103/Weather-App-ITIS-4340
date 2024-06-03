@@ -25,7 +25,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "proxy": "https://weather-app-itis-4340-backend.vercel.app/",
+  "proxy": "https://weather-app-itis-4340-backend-git-backend-dcadams103s-projects.vercel.app/",
   "eslintConfig": {
     "extends": [
       "react-app",

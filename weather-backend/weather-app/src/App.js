@@ -114,7 +114,8 @@ function App() {
           
           setCards(json);
           
-        });
+        })
+        .catch(error => console.error('Error:', error));
 
       // Daily Forecast
       fetch(`${process.env.REACT_APP_EXPRESS_JS_BACKEND_URL}/daily?lat=${lat}&long=${long}&unit=${unit}`)

@@ -99,7 +99,7 @@ function App() {
     if(lat !== 0 && long !== 0) {
 
       // // Current Weather
-      fetch(`/weather?lat=${lat}&long=${long}&unit=${unit}`)
+      fetch(`${process.env.REACT_APP_EXPRESS_JS_BACKEND_URL}/weather?lat=${lat}&long=${long}&unit=${unit}`)
         .then(res => res.json())
         .then(json => {
           setCurrentWeather({city: json.name, conditions: json.conditions, 
@@ -108,7 +108,7 @@ function App() {
         });
       
       // Hourly Forecast
-      fetch(`/forecast?lat=${lat}&long=${long}&unit=${unit}`)
+      fetch(`${process.env.REACT_APP_EXPRESS_JS_BACKEND_URL}/forecast?lat=${lat}&long=${long}&unit=${unit}`)
         .then(res => res.json())
         .then(json => {
           
@@ -117,7 +117,7 @@ function App() {
         });
 
       // Daily Forecast
-      fetch(`/daily?lat=${lat}&long=${long}&unit=${unit}`)
+      fetch(`${process.env.REACT_APP_EXPRESS_JS_BACKEND_URL}/daily?lat=${lat}&long=${long}&unit=${unit}`)
         .then(res => res.json())
         .then(json => {
           

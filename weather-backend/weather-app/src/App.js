@@ -98,33 +98,33 @@ function App() {
   useEffect(() => {
     if(lat !== 0 && long !== 0) {
 
-      // // Current Weather
-      fetch(`${process.env.REACT_APP_EXPRESS_JS_BACKEND_URL}/weather?lat=${lat}&long=${long}&unit=${unit}`)
-        .then(res => res.json())
-        .then(json => {
-          setCurrentWeather({city: json.name, conditions: json.conditions, 
-            temp: json.temp, feelsLike: json.feelsLike,
-            sunrise: json.sunrise, sunset: json.sunset, gusts: json.gusts, wind: json.wind}); 
-        });
+      // Current Weather
+      // fetch(`${process.env.REACT_APP_EXPRESS_JS_BACKEND_URL}/weather?lat=${lat}&long=${long}&unit=${unit}`)
+      //   .then(res => res.json())
+      //   .then(json => {
+      //     setCurrentWeather({city: json.name, conditions: json.conditions, 
+      //       temp: json.temp, feelsLike: json.feelsLike,
+      //       sunrise: json.sunrise, sunset: json.sunset, gusts: json.gusts, wind: json.wind}); 
+      //   });
       
-      // Hourly Forecast
-      fetch(`${process.env.REACT_APP_EXPRESS_JS_BACKEND_URL}/forecast?lat=${lat}&long=${long}&unit=${unit}`)
-        .then(res => res.json())
-        .then(json => {
+      // // Hourly Forecast
+      // fetch(`${process.env.REACT_APP_EXPRESS_JS_BACKEND_URL}/forecast?lat=${lat}&long=${long}&unit=${unit}`)
+      //   .then(res => res.json())
+      //   .then(json => {
           
-          setCards(json);
+      //     setCards(json);
           
-        })
-        .catch(error => console.error('Error:', error));
+      //   })
+      //   .catch(error => console.error('Error:', error));
 
-      // Daily Forecast
-      fetch(`${process.env.REACT_APP_EXPRESS_JS_BACKEND_URL}/daily?lat=${lat}&long=${long}&unit=${unit}`)
-        .then(res => res.json())
-        .then(json => {
+      // // Daily Forecast
+      // fetch(`${process.env.REACT_APP_EXPRESS_JS_BACKEND_URL}/daily?lat=${lat}&long=${long}&unit=${unit}`)
+      //   .then(res => res.json())
+      //   .then(json => {
           
-          setFiveDay(json);
+      //     setFiveDay(json);
           
-        });
+      //   });
 
     }
   }, [lat, long, unit]);
@@ -244,7 +244,6 @@ function App() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet" />
-
       </head>
 
       <div className="App">

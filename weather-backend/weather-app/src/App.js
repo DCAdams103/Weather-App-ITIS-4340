@@ -1,7 +1,5 @@
-import logo from './logo.svg';
 import './App.css';
-import {useState, useRef, useEffect} from 'react';
-import {motion, useTransform, useScroll} from 'framer-motion';
+import {useState, useEffect} from 'react';
 import {MdChevronRight, MdChevronLeft} from 'react-icons/md';
 import Switch from 'react-switch';
 import { SearchBar } from './components/SearchBar';
@@ -20,7 +18,6 @@ function App() {
   const [deflate, setDeflate] = useState(false);
   const [fade, setFade] = useState(false);
   const [text, setText] = useState('View More');
-  const [selected, setSelected] = useState([]);
   const [lat, setLat] = useState(0);
   const [long, setLong] = useState(0);
   const [currentWeather, setCurrentWeather] = useState({city: '', conditions: '', temp: -99, feelsLike: -99, sunrise: '', sunset: '', gusts: -99, wind: -99});
@@ -78,13 +75,10 @@ function App() {
     }
   };
 
-  const [hours, setHours] = useState([]);
-
   useEffect(() => {
 
     async function getLocation() {
-      console.log(selectedLocation);
-      if(selectedLocation == "Current Location") {
+      if(selectedLocation === "Current Location") {
         navigator.geolocation.getCurrentPosition((position) => {
           setLat(position.coords.latitude);
           setLong(position.coords.longitude);
@@ -100,81 +94,37 @@ function App() {
   }, []);
 
 
-  {/* -------------------- Grab current weather data -------------------- */}
+  /* -------------------- Grab current weather data -------------------- */
   useEffect(() => {
-    if(lat != 0 && long != 0) {
-      let hoursArr = [];
-      let tempCards = [];
+    if(lat !== 0 && long !== 0) {
 
-      fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&units=${unit}&appid={API_KEY}`)
-      .then(response => response.json())
-      .then(json => {
-        let sunrise = 'N/A'
-        if('sunrise' in json.sys) {
-          sunrise = new Date(json.sys.sunrise * 1000).toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hourCycle: 'h12'});
-        }
+      // Current Weather
+      // fetch(`${process.env.REACT_APP_EXPRESS_JS_BACKEND_URL}/weather?lat=${lat}&long=${long}&unit=${unit}`)
+      //   .then(res => res.json())
+      //   .then(json => {
+      //     setCurrentWeather({city: json.name, conditions: json.conditions, 
+      //       temp: json.temp, feelsLike: json.feelsLike,
+      //       sunrise: json.sunrise, sunset: json.sunset, gusts: json.gusts, wind: json.wind}); 
+      //   });
+      
+      // // Hourly Forecast
+      // fetch(`${process.env.REACT_APP_EXPRESS_JS_BACKEND_URL}/forecast?lat=${lat}&long=${long}&unit=${unit}`)
+      //   .then(res => res.json())
+      //   .then(json => {
+          
+      //     setCards(json);
+          
+      //   })
+      //   .catch(error => console.error('Error:', error));
 
-        let sunset = "N/A"
-        if('sunset' in json.sys) {
-          sunset = new Date(json.sys.sunset * 1000).toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hourCycle: 'h12'});
-        }
-        
-        let gusts="N/A"
-        if('gust' in json.wind) {
-          gusts = json.wind.gust.toFixed(0);
-        }
-
-        let wind = "N/A" 
-        if('speed' in json.wind) {
-          wind = json.wind.speed.toFixed(0);
-        }
-
-        setCurrentWeather({city: json.name, conditions: json.weather[0].main, 
-                          temp: json.main.temp.toFixed(0), feelsLike: json.main.feels_like.toFixed(0),
-                          sunrise: sunrise, sunset: sunset, gusts: gusts, wind: wind}); 
-      })
-      .catch(error => console.error('Error:', error));
-
-      fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${long}&units=${unit}&appid={API_KEY}`)
-      .then(response => response.json())
-      .then(json => { 
-        json.list.forEach(element => {
-          let d = new Date(element.dt_txt);
-          hoursArr.push(d.toLocaleString('en-US', {hour: 'numeric', hourCycle: 'h12'}));
-
-          if(element.weather[0].main == "Clear") {
-            tempCards.push({url: "sun-icon.png", title: "Clear", temp: element.main.temp.toFixed(0)});
-          } else if (element.weather[0].main == "Clouds") {
-            tempCards.push({url: "cloudy-icon.png", title: "Cloudy", temp: element.main.temp.toFixed(0)});
-          } else if (element.weather[0].main == "Rain") {
-            tempCards.push({url: "rainy-icon.png", title: "Rainy", temp: element.main.temp.toFixed(0)});
-          }
-
-          setCards(tempCards);
-
-        })
-      })
-      .then(setHours(hoursArr))
-      .catch(error => console.error('Error:', error));
-
-      const options = {method: 'GET', headers: {accept: 'application/json'}};
-      console.log('test');
-      fetch(`https://api.tomorrow.io/v4/weather/forecast?location=${lat},${long}&timesteps=daily&units=${unit}&apikey={API_KEY}`, options)
-        .then(response => response.json())
-        .then(json => {
-          console.log(json);
-          let tempFiveDay = [];
-
-          json.timelines.daily.forEach(element => {
-            let d = new Date(element.time);
-            tempFiveDay.push({day: d.toLocaleString('en-US', {weekday: 'short'}), hi: element.values.temperatureMax.toFixed(0), lo: element.values.temperatureMin.toFixed(0), weatherCode: element.values.weatherCodeMax});
-          });
-
-          console.log(tempFiveDay);
-          setFiveDay(tempFiveDay);
-
-        })
-        .catch(err => console.error(err));
+      // // Daily Forecast
+      // fetch(`${process.env.REACT_APP_EXPRESS_JS_BACKEND_URL}/daily?lat=${lat}&long=${long}&unit=${unit}`)
+      //   .then(res => res.json())
+      //   .then(json => {
+          
+      //     setFiveDay(json);
+          
+      //   });
 
     }
   }, [lat, long, unit]);
@@ -182,11 +132,11 @@ function App() {
   function WeatherPicture(props) {
     const conditions = props.conditions;
 
-    if(conditions == "Clear") {
+    if(conditions === "Clear") {
       return <img src="sun-icon.png" className="w-[300px] pl-[100px]" alt='sun-icon' />
-    } else if (conditions == "Clouds") {
+    } else if (conditions === "Clouds") {
       return <img src="cloudy-icon.png" className="w-[300px] pl-[100px]" alt='cloudy-icon' />
-    } else if (conditions == "Rain") {
+    } else if (conditions === "Rain") {
       return <img src="rainy-icon.png" className="w-[300px] pl-[100px]" alt='rainy-icon' />
     }
 
@@ -194,9 +144,9 @@ function App() {
 
   function ForecastPicture(props) {
     const weatherCode = props.weatherCode;
-    if(weatherCode <= 1000 || weatherCode >= 1100 || weatherCode == 1103) {
+    if(weatherCode <= 1000 || weatherCode >= 1100 || weatherCode === 1103) {
       return <img src="sun-icon.png" className="w-[100px] pl-[5%] pr-[3%]" alt='sun-icon' />
-    } else if (weatherCode == 1101 || weatherCode == 1102 || weatherCode == 1001 ) {
+    } else if (weatherCode === 1101 || weatherCode === 1102 || weatherCode === 1001 ) {
       return <img src="cloudy-icon.png" className="w-[100px] pl-[5%] pr-[3%]" alt='cloudy-icon' />
     } else if (weatherCode <= 4000 || weatherCode >= 4212) {
       return <img src="rainy-icon.png" className="w-[100px] pl-[5%] pr-[3%]" alt='rainy-icon' />
@@ -206,9 +156,9 @@ function App() {
   function ForecastText(props) {
     const weatherCode = props.weatherCode;
 
-    if(weatherCode <= 1000 || weatherCode >= 1100 || weatherCode == 1103) {
+    if(weatherCode <= 1000 || weatherCode >= 1100 || weatherCode === 1103) {
       return <h3 className="forecast-text pr-[5%]">Clear</h3>
-    } else if (weatherCode == 1101 || weatherCode == 1102 || weatherCode == 1001 ) {
+    } else if (weatherCode === 1101 || weatherCode === 1102 || weatherCode === 1001 ) {
       return <h3 className="forecast-text pr-[5%]">Clouds</h3>
     } else if (weatherCode <= 4000 || weatherCode >= 4212) {
       return <h3 className="forecast-text pr-[5%]">Rainy</h3>
@@ -216,7 +166,7 @@ function App() {
 
   }
 
-  {/* ----------------------------- RADAR Functios ----------------------------- */}
+  /* ----------------------------- RADAR Functios ----------------------------- */
 
   function RadarWindow() {
     return (
@@ -258,7 +208,7 @@ function App() {
   function handleChange() {
     setChecked(!checked);
 
-    if(unit == 'imperial') {
+    if(unit === 'imperial') {
       setUnit('metric');
     } else {
       setUnit('imperial');
@@ -266,7 +216,7 @@ function App() {
 
   }
 
-  {/* ----------------------------- Windy Map Functios ----------------------------- */}
+  /* ----------------------------- Windy Map Functios ----------------------------- */
   
   async function showWindyMapHandler() {
     setShowWindy(!showWindy); 
@@ -286,6 +236,7 @@ function App() {
   }
 
 
+
   return (
     <>
       {/* ------------ Import font ------------ */}
@@ -293,12 +244,11 @@ function App() {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300&display=swap" rel="stylesheet" />
-
       </head>
 
       <div className="App">
         {showRadar && <RadarWindow />}
-        {lat != 0 && long != 0 && showWindy && <WindyMap />}
+        {lat !== 0 && long !== 0 && showWindy && <WindyMap />}
         <div className="grid-container">
 
             {/* ------------ Left Column ------------ */}
@@ -341,7 +291,7 @@ function App() {
                   <div className="float-left">
                     {!currentWeather.city ? <h1 className="location-title float-left">Loading...</h1> : <h1 className="location-title float-left">{currentWeather.city}</h1> }
                     {!currentWeather.conditions ? <h3 className="precipitation">Loading...</h3> : <h3 className="percipitation">{currentWeather.conditions}</h3> }
-                    {currentWeather.temp == -99 ? <h1 className="temperature">Loading...</h1> : <h1 className="temperature">{currentWeather.temp}°</h1>}
+                    {currentWeather.temp === -99 ? <h1 className="temperature">Loading...</h1> : <h1 className="temperature">{currentWeather.temp}°</h1>}
                   </div>
                   
                   {currentWeather.conditions && <WeatherPicture conditions={currentWeather.conditions} />}
@@ -374,7 +324,7 @@ function App() {
                     <div id="slider" className="w-full h-full overflow-x-scroll scroll overscroll-none whitespace-nowrap scroll-smooth scrollbar-hide" onWheel={(e) => wheelScroll(e)}>
                       {cards.map((card, index) => (
                         <div className="inline-block px-[20px] pt-[15px]">
-                          <h3 className="">{hours[index]}</h3>
+                          <h3 className="">{card.hour}</h3>
                           <img className="w-[75px] inline-block p-2 cursor-pointer hover:scale-105 ease-in-out duration-300 p-0" src={card.url} alt='/' />
                           <h3 className="">{card.temp}°</h3>
                         </div>
@@ -402,7 +352,7 @@ function App() {
                       <img src='temperature-icon.png' className="temperature-icon" alt="temperature-icon" />
                       <div>
                         <h3 className="extra-content-title">Feels Like</h3>
-                        {currentWeather.feelsLike == -99 ? <h1 className="extra-content-subtitle">Loading...</h1> : <h1 className="extra-content-subtitle">{currentWeather.feelsLike}°</h1> }
+                        {currentWeather.feelsLike === -99 ? <h1 className="extra-content-subtitle">Loading...</h1> : <h1 className="extra-content-subtitle">{currentWeather.feelsLike}°</h1> }
                       </div>
 
                       {(fade) && (
@@ -423,13 +373,13 @@ function App() {
                       
                       <div>
                         <h3 className="extra-content-title">Sunrise</h3>
-                        {currentWeather.sunrise == '' ? <h1 className="extra-content-subtitle">Loading...</h1> : <h1 className="extra-content-subtitle">{currentWeather.sunrise}</h1> }
+                        {currentWeather.sunrise === '' ? <h1 className="extra-content-subtitle">Loading...</h1> : <h1 className="extra-content-subtitle">{currentWeather.sunrise}</h1> }
                         {/* <h1 className="extra-content-subtitle">7:03am</h1> */}
                       </div>
 
                       {(fade) && (
                         <div className={inflate ? deflate ? "extra-content-container-col-2-row-2-fade-out" : "extra-content-container-col-2-row-2-fade-in" : "extra-content-container-col-2-row-2"}>
-                          {currentWeather.wind == -99 ? <h1 className='wind-speed-text'>Loading...</h1> : <h1 className='wind-speed-text'>{currentWeather.wind}</h1> }
+                          {currentWeather.wind === -99 ? <h1 className='wind-speed-text'>Loading...</h1> : <h1 className='wind-speed-text'>{currentWeather.wind}</h1> }
 
                           <div className="wind-speed-container">
                             <h3 className="wind-speed-subtitle">mph</h3>
@@ -453,12 +403,12 @@ function App() {
                       <img src='sunset-icon.png' className="sunrise-sunset-icon" alt="sunrise-icon" />
                       <div>
                         <h3 className="extra-content-title">Sunset</h3>
-                        {currentWeather.sunset == '' ? <h1 className="extra-content-subtitle">Loading...</h1> : <h1 className="extra-content-subtitle">{currentWeather.sunset}</h1> }
+                        {currentWeather.sunset === '' ? <h1 className="extra-content-subtitle">Loading...</h1> : <h1 className="extra-content-subtitle">{currentWeather.sunset}</h1> }
                         </div>
 
                       {(fade) &&(
                         <div className={inflate ? deflate ? "extra-content-container-col-2-row-2-fade-out" : "extra-content-container-col-2-row-2-fade-in" : "extra-content-container-col-2-row-2"}>
-                          {currentWeather.gusts == -99 ? <h1 className='wind-speed-text'>Loading...</h1> : <h1 className='wind-speed-text'>{currentWeather.gusts}</h1> }
+                          {currentWeather.gusts === -99 ? <h1 className='wind-speed-text'>Loading...</h1> : <h1 className='wind-speed-text'>{currentWeather.gusts}</h1> }
 
                           <div className="wind-gusts-container">
                             <h3 className="wind-speed-subtitle">mph</h3>
@@ -493,10 +443,10 @@ function App() {
                         <div className="extra-content-container">
                           
                           <div className={inflate ? deflate ? "extra-2-content-fade-in" : "extra-2-content-fade-out" : "extra-2-content"}>
-                            {currentWeather.gusts == -99 ? <h1 className='wind-speed-text'>Loading...</h1> : <h1 className='wind-speed-text'>{currentWeather.gusts}</h1> }
+                            {currentWeather.gusts === -99 ? <h1 className='wind-speed-text'>Loading...</h1> : <h1 className='wind-speed-text'>{currentWeather.gusts}</h1> }
 
                             <div className="wind-gusts-container">
-                              {unit == 'imperial' ? <h3 className="wind-speed-subtitle">mph</h3> : <h3 className="wind-speed-subtitle">km/h</h3>}
+                              {unit === 'imperial' ? <h3 className="wind-speed-subtitle">mph</h3> : <h3 className="wind-speed-subtitle">km/h</h3>}
                               <br/>
                               <h3 className="wind-speed-subtitle">Gusts</h3>
                             </div>
@@ -514,10 +464,10 @@ function App() {
                         <div className="extra-content-container">
 
                           <div className={inflate ? deflate ? "extra-2-content-fade-in" : "extra-2-content-fade-out" : "extra-2-content"}>
-                              {currentWeather.wind == -99 ? <h1 className='wind-speed-text'>Loading...</h1> : <h1 className='wind-speed-text'>{currentWeather.wind}</h1> }
+                              {currentWeather.wind === -99 ? <h1 className='wind-speed-text'>Loading...</h1> : <h1 className='wind-speed-text'>{currentWeather.wind}</h1> }
 
                             <div className="wind-speed-container">
-                              {unit == 'imperial' ? <h3 className="wind-speed-subtitle">mph</h3> : <h3 className="wind-speed-subtitle">km/h</h3>}
+                              {unit === 'imperial' ? <h3 className="wind-speed-subtitle">mph</h3> : <h3 className="wind-speed-subtitle">km/h</h3>}
                                 <br/>
                                 <h3 className="wind-speed-subtitle">Wind</h3>
                               </div>
